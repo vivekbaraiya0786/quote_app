@@ -1,64 +1,43 @@
-// class QuoteModel {
-//   String? quoteCategory;
-//   String? quoteImage;
-//   int? quoteId;
-//   String? quoteName;
-//   String? quoteAuthor;
-//   List<dynamic>? quotes;
-//
-//   QuoteModel({
-//      this.quoteCategory,
-//      this.quoteImage,
-//     this.quoteId,
-//      this.quoteName,
-//      this.quoteAuthor,
-//     this.quotes,
-//   });
-//
-//   factory QuoteModel.fromMap({required Map data}) {
-//     return QuoteModel(
-//       quoteCategory: data['quotes-category'],
-//       quoteImage: data['quotes-image'],
-//       quoteId: data['id'],
-//       quoteName: data['quote'],
-//       quoteAuthor: data['author'],
-//       quotes: data['quotes'],
-//     );
-//   }
-// }
+import 'dart:typed_data';
 
-
-class QuoteModel {
+class QuotesModel {
+  int id;
   String category;
-  String image;
+  // Uint8List? categoryImage;
   List<Quote> quotes;
 
-  QuoteModel(this.category, this.image, this.quotes);
+  QuotesModel({
+    required this.id,
+    required this.category,
+    // required this.categoryImage,
+    required this.quotes,
+  });
 
-  factory QuoteModel.fromJson(Map<String, dynamic> json) {
-    var quoteList = json['quotes'] as List;
-    List<Quote> quotes = quoteList.map((quote) => Quote.fromJson(quote)).toList();
+  factory QuotesModel.fromJson(Map<String, dynamic> json) => QuotesModel(
+    id: json["id"],
+    category: json["category"],
+    // categoryImage: json["quotes-image"],
+    quotes: List<Quote>.from(json["quotes"].map((x) => Quote.fromJson(x))),
+  );
 
-    return QuoteModel(
-      json['quotes-category'],
-      json['quotes-image'],
-      quotes,
-    );
-  }
 }
 
 class Quote {
-  int id;
+  int? id;
   String quote;
   String author;
+  bool isFavorite;
 
-  Quote(this.id, this.quote, this.author);
+  Quote({
+    this.id,
+    required this.quote,
+    required this.author,
+    this.isFavorite = false,
+  });
 
-  factory Quote.fromJson(Map<String, dynamic> json) {
-    return Quote(
-      json['id'],
-      json['quote'],
-      json['author'],
-    );
-  }
+  factory Quote.fromJson(Map<String, dynamic> json) => Quote(
+    id: json["id"],
+    quote: json["quote"],
+    author: json["author"],
+  );
 }

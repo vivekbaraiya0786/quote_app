@@ -1,11 +1,17 @@
+import 'dart:async';
 import 'dart:math';
-
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:google_fonts/google_fonts.dart';
+import 'package:quotes_app/views/screens/second_page.dart';
+import '../../contoller/category_controller.dart';
 import '../../contoller/controller.dart';
+import '../../contoller/theme.dart';
+import '../../modals/category_database_model.dart';
 import '../../utils/attributes.dart';
+import '../../utils/helpers/DBhelper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,36 +20,28 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-
-
-  final QuotesController _quotesController = Get.put(QuotesController());
-
-  bool isDarkMode = Get.isDarkMode;
-
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  Future<List<CategoryDatabaseModel>>? getAllRecord;
+  LocalJsonController localjsoncontroller = Get.put(LocalJsonController());
 
   final List<Color> _colors = List.generate(
     18,
-        (index) => Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
+    (index) =>
+        Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
   );
   late List<Color> _containerColors;
-  final Random _random = Random();
+
+
   @override
   void initState() {
     super.initState();
+    getAllRecord = DBHelper.dbHelper.fatchAllCategory();
     _containerColors = List.generate(_colors.length, (index) => _colors[index]);
   }
 
-  void _changeContainerColor(int index) {
-    setState(() {
-      _containerColors[index] = _getRandomColor();
-    });
-  }
 
-  Color _getRandomColor() {
-    return _colors[_random.nextInt(_colors.length)];
-  }
-
+  CategoryController categoryController = Get.put(CategoryController());
+  ThemeController _themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -52,25 +50,20 @@ class _HomePageState extends State<HomePage> {
       drawer: Drawer(
         child: Column(
           children: [
+            SizedBox(
+              height: Get.height * 0.03,
+              child: Container(
+                color: const Color(0xffcf5260),
+              ),
+            ),
             Container(
               height: Get.height * 0.25,
               width: Get.width,
               decoration: const BoxDecoration(
                 color: Colors.grey,
                 image: DecorationImage(
-                  image: AssetImage(
-                      "assets/other images/pexels-photo-2406449.jpeg"),
+                  image: AssetImage("assets/other images/quote.jpeg"),
                   fit: BoxFit.cover,
-                ),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.only(top: 30, left: 15),
-                child: Text(
-                  "English Quotes",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
                 ),
               ),
             ),
@@ -92,22 +85,14 @@ class _HomePageState extends State<HomePage> {
               ),
               title: Text("My Favorite"),
             ),
-            const ListTile(
-              leading:  Icon(
+            ListTile(
+              leading: const Icon(
                 Icons.refresh_sharp,
               ),
-              title:  Text("Theme"),
-              // trailing: IconButton(
-              //     onPressed: () {
-              //       if (Get.isDarkMode) {
-              //         themeController.changeThemeMode(ThemeMode.light);
-              //       } else {
-              //         themeController.changeThemeMode(ThemeMode.dark);
-              //       }
-              //     },
-              //     icon: (Get.isDarkMode)
-              //         ? const Icon(Icons.light_mode)
-              //         : const Icon(Icons.dark_mode_outlined)),
+              title: const Text("Theme"),
+              onTap: () {
+                Get.toNamed("/theme");
+              },
             ),
             const ListTile(
               leading: Icon(
@@ -124,37 +109,49 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.list_rounded),
-          onPressed: () {
-            if (scaffoldKey.currentState!.isDrawerOpen) {
-              scaffoldKey.currentState!.closeDrawer();
-            } else {
-              scaffoldKey.currentState!.openDrawer();
-            }
-          },
-        ),
-        title: const Text(
-          "Quotes",
-        ),
-        centerTitle: true,
-        // actions: [
-        //   IconButton(
-        //     onPressed: _quotesController.loadJSON,
-        //     icon: const Icon(Icons.change_circle),
-        //   ),
-        // ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(
-          () => Container(
-            alignment: Alignment.center,
-            child: (_quotesController.quotes.isEmpty)
-                ? const Text("No data available")
-                : GridView.builder(
-                    itemCount: _quotesController.quotes.length,
+          () => AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.list_rounded),
+              onPressed: () {
+                if (scaffoldKey.currentState!.isDrawerOpen) {
+                  scaffoldKey.currentState!.closeDrawer();
+                } else {
+                  scaffoldKey.currentState!.openDrawer();
+                }
+              },
+            ),
+            title:  Text(
+              "Quotes",
+              style: GoogleFonts.lilitaOne(),
+            ),
+            centerTitle: true,
+            backgroundColor: _themeController.appBarColor.value,
+          ),
+        ),
+      ),
+      body: FutureBuilder(
+        future: getAllRecord,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("ERROR : ${snapshot.error}"),
+            );
+          } else if (snapshot.hasData) {
+            List<CategoryDatabaseModel>? data = snapshot.data;
+            if (data == null || data.isEmpty) {
+              return const Center(
+                child: Text("NO DATA AVAILABLE"),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.all(14),
+                child: Container(
+                  child: GridView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: data.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -162,11 +159,37 @@ class _HomePageState extends State<HomePage> {
                       crossAxisSpacing: 10,
                     ),
                     itemBuilder: (context, index) {
-                      final quote = _quotesController.quotes[index];
-                      final containerColor = _containerColors[index % _containerColors.length];
+                      final containerColor =
+                          _containerColors[index % _containerColors.length];
                       return GestureDetector(
                         onTap: () {
-                          Get.toNamed("/second", arguments: quote);
+                          categoryController
+                              .setCategoryName(data[index].category_name);
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder: (BuildContext context,
+                                  Animation<double> animation,
+                                  Animation<double> secondaryAnimation) {
+                                return const second_page();
+                              },
+                              transitionsBuilder: (BuildContext context,
+                                  Animation<double> animation,
+                                  Animation<double> secondaryAnimation,
+                                  Widget child) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(1.0, 0.0),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                );
+                              },
+                              transitionDuration:
+                                  const Duration(milliseconds: 600),
+                            ),
+                          );
+                          getAllQuotes = DBHelper.dbHelper
+                              .fatchAllQuotes(id: data[index].id);
                         },
                         child: Card(
                           elevation: 10,
@@ -180,18 +203,19 @@ class _HomePageState extends State<HomePage> {
                                 width: Get.width * 0.3,
                                 decoration: BoxDecoration(
                                   color: containerColor.withOpacity(0.7),
-                                  // color: _colors[index % _colors.length]
-                                  //     .withOpacity(0.7),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Image.asset(quote.image, scale: 6),
+                                child: Image.asset(
+                                  imagePaths[index % imagePaths.length],
+                                  scale: 6,
+                                ),
                               ),
                               SizedBox(
                                 height: Get.height * 0.012,
                               ),
                               Text(
-                                quote.category,
-                                style: const TextStyle(
+                                data[index].category_name,
+                                style: GoogleFonts.teko(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                 ),
@@ -202,44 +226,15 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-          ),
-        ),
+                ),
+              );
+            }
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
 }
-// final List<Color> _colors = [
-//   const Color(0xffa61102),
-//   const Color(0xff02472B),
-//   const Color(0xffFE7DA6),
-//   const Color(0xff3c4e4e),
-//   const Color(0xff2a603c),
-//   const Color(0xffdd7289),
-//   const Color(0xffdf5219),
-//   const Color(0xff37556A),
-//   const Color(0xff1eb290),
-//   const Color(0xff9b2339),
-//   const Color(0xff2a2b22),
-//   const Color(0xffbb002f),
-//   const Color(0xff49be6f),
-//   const Color(0xffea0132),
-//   const Color(0xffc41859),
-//   const Color(0xff830000),
-//   const Color(0xff780100),
-//   const Color(0xfffb4b43),
-//   const Color(0xff780100),
-//   const Color(0xffe2425f),
-//   const Color(0xff770101),
-//   const Color(0xff355265),
-//   const Color(0xff000085),
-//   const Color(0xff2b5b36),
-//   const Color(0xfffd4c3c),
-//   const Color(0xff1cb394),
-//   const Color(0xff292b1d),
-//   const Color(0xff9f203a),
-//   const Color(0xffc81759),
-//   const Color(0xffe60059),
-//   const Color(0xff09422a),
-//   const Color(0xffe63f58),
-//   const Color(0xffa91100),
-// ];

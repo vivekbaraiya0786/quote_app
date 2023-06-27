@@ -2,25 +2,23 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+import '../modals/local_jsonmodel.dart';
 import '../modals/qoutes_model.dart';
 
-class QuotesController extends GetxController {
-  RxList<QuoteModel> quotes = <QuoteModel>[].obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    loadJSON();
-  }
+class LocalJsonController extends GetxController {
+  LocalJsonModel localJsonModel = LocalJsonModel(jsonData: "", Quotes: [] );
 
-  Future<void> loadJSON() async {
-    final data = await rootBundle.loadString('assets/json/quotes.json');
-    final decodedData = jsonDecode(data);
-    final List<QuoteModel> parsedQuotes = List<QuoteModel>.from(
-      decodedData.map(
-            (json) => QuoteModel.fromJson(json),
-      ),
-    );
-    quotes.value = parsedQuotes;
+  LocalJsonDataLoad() async {
+    String JsonPath = "assets/json/quotes.json";
+    localJsonModel.jsonData = await rootBundle.loadString(JsonPath);
+
+    List decodedList = jsonDecode(localJsonModel.jsonData);
+
+    localJsonModel.Quotes =
+        decodedList.map((e) => QuotesModel.fromJson(e)).toList();
+
+    update();
   }
 }
