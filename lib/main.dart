@@ -18,13 +18,12 @@ void main()async{
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      initialRoute: '/HomePage',
       getPages: [
+        GetPage(name: "/",page:() =>  const Onboarding(),),
         GetPage(name: "/HomePage",page:() => const HomePage(),),
         GetPage(name: "/second",page:() => const second_page(),),
         GetPage(name: "/edit",page:() => const Edit_page(),),
         GetPage(name: "/theme",page:() =>   ThemeScreen(),),
-        GetPage(name: "/",page:() =>  const Onboarding(),),
       ],
     ),
   );

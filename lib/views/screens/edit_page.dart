@@ -312,7 +312,7 @@ class _Edit_pageState extends State<Edit_page> {
                                         height: Get.height * 0.4,
                                         padding: const EdgeInsets.all(16.0),
                                         decoration: BoxDecoration(
-                                            color: Colors.grey.shade300),
+                                            ),
                                         child: Column(
                                           children: [
                                             Expanded(
@@ -419,7 +419,6 @@ class _Edit_pageState extends State<Edit_page> {
                                         height: Get.height * 0.4,
                                         padding: const EdgeInsets.all(16.0),
                                         decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
                                         ),
                                         child: Column(
                                           children: [

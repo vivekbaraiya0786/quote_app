@@ -67,44 +67,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            const ListTile(
+             ListTile(
               leading: Icon(
                 Icons.list_alt,
               ),
-              title: Text("Quote Category"),
+              title: Text("Quote Category",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
             ),
-            const ListTile(
+             ListTile(
               leading: Icon(
                 Icons.water,
               ),
-              title: Text("Other Quote"),
+              title: Text("Other Quote",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
             ),
-            const ListTile(
+             ListTile(
               leading: Icon(
                 CupertinoIcons.heart_fill,
               ),
-              title: Text("My Favorite"),
+              title: Text("My Favorite",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
             ),
             ListTile(
               leading: const Icon(
                 Icons.refresh_sharp,
               ),
-              title: const Text("Theme"),
+              title:  Text("Theme",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
               onTap: () {
-                Get.toNamed("/theme");
+                Get.toNamed("/theme",);
               },
             ),
-            const ListTile(
+             ListTile(
               leading: Icon(
                 Icons.edit_attributes_outlined,
               ),
-              title: Text("Rate & Review"),
+              title: Text("Rate & Review",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
             ),
-            const ListTile(
+             ListTile(
               leading: Icon(
                 Icons.feedback,
               ),
-              title: Text("Feedback"),
+              title: Text("Feedback",style: GoogleFonts.hind(
+                  fontWeight:
+                  FontWeight.bold),),
             ),
           ],
         ),
