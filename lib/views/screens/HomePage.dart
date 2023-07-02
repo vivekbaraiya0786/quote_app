@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,14 +30,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
   late List<Color> _containerColors;
 
-
   @override
   void initState() {
     super.initState();
     getAllRecord = DBHelper.dbHelper.fatchAllCategory();
     _containerColors = List.generate(_colors.length, (index) => _colors[index]);
   }
-
 
   CategoryController categoryController = Get.put(CategoryController());
   ThemeController _themeController = Get.find<ThemeController>();
@@ -67,44 +64,64 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(
                 Icons.list_alt,
               ),
-              title: Text("Quote Category"),
+              title: Text(
+                "Quote Category",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(
                 Icons.water,
               ),
-              title: Text("Other Quote"),
+              title: Text(
+                "Other Quote",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(
                 CupertinoIcons.heart_fill,
               ),
-              title: Text("My Favorite"),
+              title: Text(
+                "My Favorite",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
             ),
             ListTile(
               leading: const Icon(
                 Icons.refresh_sharp,
               ),
-              title: const Text("Theme"),
+              title: Text(
+                "Theme",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
               onTap: () {
-                Get.toNamed("/theme");
+                Get.toNamed(
+                  "/theme",
+                );
               },
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(
                 Icons.edit_attributes_outlined,
               ),
-              title: Text("Rate & Review"),
+              title: Text(
+                "Rate & Review",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(
                 Icons.feedback,
               ),
-              title: Text("Feedback"),
+              title: Text(
+                "Feedback",
+                style: GoogleFonts.hind(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -123,11 +140,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 }
               },
             ),
-            title:  Text(
+            title: Text(
               "Quotes",
               style: GoogleFonts.lilitaOne(),
             ),
             centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Get.toNamed("/favourite");
+                },
+                icon: Icon(CupertinoIcons.heart_fill),
+              ),
+            ],
             backgroundColor: _themeController.appBarColor.value,
           ),
         ),
@@ -151,7 +176,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 child: Container(
                   child: GridView.builder(
                     physics: const BouncingScrollPhysics(),
-                    itemCount: data.length,
+                    itemCount: 32,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,

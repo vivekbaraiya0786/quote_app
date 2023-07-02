@@ -26,18 +26,19 @@ class Quote {
   int? id;
   String quote;
   String author;
-  bool isFavorite;
+  int? favorite;
 
   Quote({
     this.id,
     required this.quote,
     required this.author,
-    this.isFavorite = false,
+    this.favorite,
   });
 
   factory Quote.fromJson(Map<String, dynamic> json) => Quote(
     id: json["id"],
     quote: json["quote"],
     author: json["author"],
+    favorite: json["favorite"],
   );
 }

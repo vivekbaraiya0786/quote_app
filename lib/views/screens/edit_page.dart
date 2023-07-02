@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../contoller/theme.dart';
 import '../../modals/qoute_databse.dart';
 import '../../utils/attributes.dart';
+import 'dart:ui' as ui;
 
 class Edit_page extends StatefulWidget {
   const Edit_page({Key? key}) : super(key: key);
@@ -20,6 +22,8 @@ class Edit_page extends StatefulWidget {
 }
 
 class _Edit_pageState extends State<Edit_page> {
+
+  final GlobalKey repaintBoundaryKey = GlobalKey();
 
 
   void savegallery() async {
@@ -63,6 +67,19 @@ class _Edit_pageState extends State<Edit_page> {
         duration: const Duration(seconds: 3),
         animationDuration: const Duration(seconds: 1));
   }
+  void saveContainerAsImage() async {
+    RenderRepaintBoundary boundary =
+    repaintBoundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage();
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+    dynamic result = await ImageGallerySaver.saveImage(pngBytes);
+    bool success = result is bool && result;
+    String message = success ? "Image saved successfully" : "Failed to save image";
+    Get.snackbar("Image Save Status", message);
+  }
+
 
   final ThemeController _themeController = Get.find<ThemeController>();
 
@@ -74,7 +91,7 @@ class _Edit_pageState extends State<Edit_page> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(
-          () => AppBar(
+              () => AppBar(
             leading: IconButton(
               onPressed: () {
                 Get.back();
@@ -106,11 +123,6 @@ class _Edit_pageState extends State<Edit_page> {
                 child: Text("NO DATA AVAILABLE"),
               );
             } else {
-              final quoteModel = data.firstWhere(
-                (quoteModel) => quoteModel.quotes == quote,
-                orElse: () =>
-                    QuotesDatabaseModel(id: null, quotes: '', author: ''),
-              );
               return Padding(
                 padding: const EdgeInsets.all(12),
                 child: SingleChildScrollView(
@@ -128,34 +140,34 @@ class _Edit_pageState extends State<Edit_page> {
                         },
                         child: Screenshot(
                           controller: screenshotController,
-                          child: Container(
-                            height: Get.height * 0.5,
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: showImages
-                                  ? Colors.transparent
-                                  : selectedBackgroundColor,
-                              image: showImages
-                                  ? DecorationImage(
-                                      image: AssetImage(
-                                          imageList[currentImageIndex]),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                            ),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text(
-                                  quote,
-                                  style: TextStyle(
-                                    color: selectedFontColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: textSize,
-                                    letterSpacing: textLineSpace,
-                                    height: textLineSpace + verticalSpacing,
-                                    fontFamily: googleFonts[currentFontIndex],
+                          child: RepaintBoundary(
+                            key: repaintBoundaryKey,
+                            child: Container(
+                              height: Get.height * 0.5,
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: showImages ? Colors.transparent : selectedBackgroundColor,
+                                image: showImages
+                                    ? DecorationImage(
+                                  image: AssetImage(imageList[currentImageIndex]),
+                                  fit: BoxFit.cover,
+                                )
+                                    : null,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Text(
+                                    quote,
+                                    style: TextStyle(
+                                      color: selectedFontColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: textSize,
+                                      letterSpacing: textLineSpace,
+                                      height: textLineSpace + verticalSpacing,
+                                      fontFamily: googleFonts[currentFontIndex],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -237,7 +249,7 @@ class _Edit_pageState extends State<Edit_page> {
                             child: Text(
                               "Font Line Space",
                               style:
-                                  GoogleFonts.hind(fontWeight: FontWeight.bold),
+                              GoogleFonts.hind(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -298,7 +310,7 @@ class _Edit_pageState extends State<Edit_page> {
                             child: Text(
                               "Background Color",
                               style:
-                                  GoogleFonts.hind(fontWeight: FontWeight.bold),
+                              GoogleFonts.hind(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -312,23 +324,23 @@ class _Edit_pageState extends State<Edit_page> {
                                         height: Get.height * 0.4,
                                         padding: const EdgeInsets.all(16.0),
                                         decoration: BoxDecoration(
-                                            color: Colors.grey.shade300),
+                                        ),
                                         child: Column(
                                           children: [
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(12),
+                                                const EdgeInsets.all(12),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                                   children: [
                                                     Text(
                                                       "Select Color",
                                                       style: GoogleFonts.hind(
                                                           fontWeight:
-                                                              FontWeight.bold),
+                                                          FontWeight.bold),
                                                     ),
                                                     IconButton(
                                                       onPressed: () {
@@ -346,20 +358,20 @@ class _Edit_pageState extends State<Edit_page> {
                                               flex: 5,
                                               child: GridView.builder(
                                                 gridDelegate:
-                                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 4,
                                                   mainAxisSpacing: 8.0,
                                                   crossAxisSpacing: 8.0,
                                                 ),
                                                 itemCount:
-                                                    containerColor.length,
+                                                containerColor.length,
                                                 itemBuilder: (context, index) {
                                                   return GestureDetector(
                                                     onTap: () {
                                                       setState(() {
                                                         selectedBackgroundColor =
-                                                            containerColor[
-                                                                index];
+                                                        containerColor[
+                                                        index];
                                                         showImages = false;
                                                       });
                                                       Get.back();
@@ -367,7 +379,7 @@ class _Edit_pageState extends State<Edit_page> {
                                                     child: Container(
                                                       decoration: BoxDecoration(
                                                         color: containerColor[
-                                                            index],
+                                                        index],
                                                         shape: BoxShape.circle,
                                                       ),
                                                     ),
@@ -405,7 +417,7 @@ class _Edit_pageState extends State<Edit_page> {
                             child: Text(
                               "Font Color",
                               style:
-                                  GoogleFonts.hind(fontWeight: FontWeight.bold),
+                              GoogleFonts.hind(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -419,24 +431,23 @@ class _Edit_pageState extends State<Edit_page> {
                                         height: Get.height * 0.4,
                                         padding: const EdgeInsets.all(16.0),
                                         decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
                                         ),
                                         child: Column(
                                           children: [
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(12),
+                                                const EdgeInsets.all(12),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                                   children: [
                                                     Text(
                                                       "Select Color",
                                                       style: GoogleFonts.hind(
                                                           fontWeight:
-                                                              FontWeight.bold),
+                                                          FontWeight.bold),
                                                     ),
                                                     IconButton(
                                                       onPressed: () {
@@ -454,7 +465,7 @@ class _Edit_pageState extends State<Edit_page> {
                                               flex: 5,
                                               child: GridView.builder(
                                                 gridDelegate:
-                                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 4,
                                                   mainAxisSpacing: 8.0,
                                                   crossAxisSpacing: 8.0,
@@ -465,14 +476,14 @@ class _Edit_pageState extends State<Edit_page> {
                                                     onTap: () {
                                                       setState(() {
                                                         selectedFontColor =
-                                                            Fontcolors[index];
+                                                        Fontcolors[index];
                                                       });
                                                       Get.back();
                                                     },
                                                     child: Container(
                                                       decoration: BoxDecoration(
                                                         color:
-                                                            Fontcolors[index],
+                                                        Fontcolors[index],
                                                         shape: BoxShape.circle,
                                                       ),
                                                     ),
@@ -510,7 +521,7 @@ class _Edit_pageState extends State<Edit_page> {
                             child: Text(
                               "Font Style",
                               style:
-                                  GoogleFonts.hind(fontWeight: FontWeight.bold),
+                              GoogleFonts.hind(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -532,7 +543,7 @@ class _Edit_pageState extends State<Edit_page> {
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child:
-                                        const Icon(Icons.text_format_outlined),
+                                    const Icon(Icons.text_format_outlined),
                                   ),
                                 ),
                                 SizedBox(
@@ -551,7 +562,7 @@ class _Edit_pageState extends State<Edit_page> {
                             child: Text(
                               "Set As wallpaper",
                               style:
-                                  GoogleFonts.hind(fontWeight: FontWeight.bold),
+                              GoogleFonts.hind(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -560,7 +571,8 @@ class _Edit_pageState extends State<Edit_page> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    setWallpaper();
+                                    saveContainerAsImage();
+                                    // setWallpaper();
                                   },
                                   child: Container(
                                     height: Get.height * 0.05,
@@ -593,7 +605,7 @@ class _Edit_pageState extends State<Edit_page> {
                               )),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   const Icon(Icons.save),
                                   Text(
@@ -609,7 +621,7 @@ class _Edit_pageState extends State<Edit_page> {
                             onTap: () {
                               Clipboard.setData(ClipboardData(text: quote))
                                   .then(
-                                (value) => Get.snackbar(
+                                    (value) => Get.snackbar(
                                   "Quote",
                                   "Successfully Copy",
                                   snackPosition: SnackPosition.BOTTOM,
@@ -631,7 +643,7 @@ class _Edit_pageState extends State<Edit_page> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   const Icon(Icons.copy),
                                   Text(
@@ -656,7 +668,7 @@ class _Edit_pageState extends State<Edit_page> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   const Icon(
                                     Icons.share,

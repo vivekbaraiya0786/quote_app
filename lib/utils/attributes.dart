@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:screenshot/screenshot.dart';
 
+import '../modals/favourite_db_model.dart';
 import '../modals/qoute_databse.dart';
 
 //home page
@@ -119,11 +120,12 @@ var verticalSpacing = 1.0;
 var textLineSpace = 1.0;
 Color selectedFontColor = Colors.white;
 
- ScreenshotController screenshotController = ScreenshotController();
+ScreenshotController screenshotController = ScreenshotController();
 
 
- //other
+//other
 
 final data = GetStorage();
 
 Future<List<QuotesDatabaseModel>>? getAllQuotes;
+Future<List<FavoriteDataBaseModel>>? getAllFavorite;
