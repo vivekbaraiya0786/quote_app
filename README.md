@@ -54,7 +54,15 @@ background image, choose a random font family, copy and share the quote as a wal
 even set it as their device wallpaper.
 
 ## Getting Started
+
+
+//Videos
+
+https://github.com/vivekbaraiya0786/quote_app/assets/126376629/f98412b0-8d32-4ab5-a323-d974cdb47d49
 https://github.com/vivekbaraiya0786/quote_app/assets/126376629/7b504983-eb2d-47fd-9492-0da72a550fa1
+
+//Photos
+
 
 <img align = "left" src="https://github.com/vivekbaraiya0786/quote_app/assets/126376629/ba24b477-4638-4eb8-a2f7-32dba14b7f74" width="220px">
 <img align = "left" src="https://github.com/vivekbaraiya0786/quote_app/assets/126376629/8d52dc08-4318-47c8-95e2-063d91f2347e" width="220px">
