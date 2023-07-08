@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   final List<Color> _colors = List.generate(
     18,
-    (index) =>
+        (index) =>
         Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
   );
   late List<Color> _containerColors;
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(
-          () => AppBar(
+              () => AppBar(
             leading: IconButton(
               icon: const Icon(Icons.list_rounded),
               onPressed: () {
@@ -178,14 +178,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     physics: const BouncingScrollPhysics(),
                     itemCount: 32,
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 10,
                       crossAxisSpacing: 10,
                     ),
                     itemBuilder: (context, index) {
                       final containerColor =
-                          _containerColors[index % _containerColors.length];
+                      _containerColors[index % _containerColors.length];
                       return GestureDetector(
                         onTap: () {
                           categoryController
@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 );
                               },
                               transitionDuration:
-                                  const Duration(milliseconds: 600),
+                              const Duration(milliseconds: 600),
                             ),
                           );
                           getAllQuotes = DBHelper.dbHelper

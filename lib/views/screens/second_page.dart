@@ -283,9 +283,7 @@ class _second_pageState extends State<second_page> {
                   );
                 }
               }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return  CircularProgressIndicator();
             },
           );
         }
